@@ -9,14 +9,6 @@ from utils import save_config_file, accuracy, save_checkpoint
 
 torch.manual_seed(0)
 
-def setup_logging(log_dir, log_filename):
-    # 关闭已有的日志记录器
-    for handler in logging.root.handlers[:]:
-        logging.root.removeHandler(handler)
-    # 配置新的日志记录器
-    logging.basicConfig(filename=os.path.join(log_dir, log_filename), level=logging.DEBUG)
-
-
 class simclr_framework(object):
 
     def __init__(self, *args, **kwargs):
@@ -26,7 +18,8 @@ class simclr_framework(object):
         self.scheduler = kwargs['scheduler']
         self.log_dir = self.args.log_dir
         self.writer = SummaryWriter(log_dir=self.log_dir)
-        setup_logging(self.log_dir, 'training.log')
+        logging.basicConfig(filename=os.path.join(
+            self.log_dir, 'training.log'), level=logging.DEBUG)
         self.criterion = torch.nn.CrossEntropyLoss().to(self.args.device)
 
     def info_nce_loss(self, features):

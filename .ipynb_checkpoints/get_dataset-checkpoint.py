@@ -1,7 +1,6 @@
 from torchvision.transforms import transforms
 from transforms import GaussianBlur
 from torchvision import transforms, datasets
-from torchvision.datasets import ImageFolder
 from view import ViewGen
 from torch.utils.data import DataLoader
 
@@ -24,28 +23,13 @@ class GetTransformedDataset:
 
     def get_cifar10_train(self, n_views):
         return datasets.CIFAR10('/root/Lab3-1/data', train=True, 
-                                transform=ViewGen(self.get_simclr_transform(64), n_views),
+                                transform=ViewGen(self.get_simclr_transform(32), n_views),
                                 download=False)
     
     def get_cifar10_test(self):
         return datasets.CIFAR10('/root/Lab3-1/data', train=False,
                                 transform=transforms.ToTensor(),
                                 download=False)
-
-    def get_tiny_imagenet_train(self, n_views):
-        train_dir = '/root/Lab3-1/data/tiny-imagenet-200/train'
-        return datasets.ImageFolder(train_dir, 
-                                    transform=ViewGen(self.get_simclr_transform(64), n_views))
-    
-    def get_tiny_imagenet_test(self):
-        val_dir = '/root/Lab3-1/data/tiny-imagenet-200/val'
-        return datasets.ImageFolder(val_dir, 
-                                    transform=transforms.Compose([
-                                        transforms.Resize(64),
-                                        transforms.ToTensor()
-                                    ]))
-    
-
 
 def get_cifar100_data_loaders(shuffle=False, batch_size=256):
     train_dataset = datasets.CIFAR100('/root/Lab3-1/data', train=True, download=False,

@@ -1,0 +1,2 @@
+INFO:root:Start SimCLR training for 80 epochs.
+INFO:root:Training with gpu: cuda.
