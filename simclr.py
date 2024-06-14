@@ -26,7 +26,6 @@ class simclr_framework(object):
         self.scheduler = kwargs['scheduler']
         self.log_dir = self.args.log_dir
         self.writer = SummaryWriter(log_dir=self.log_dir)
-        setup_logging(self.log_dir, 'training.log')
         self.criterion = torch.nn.CrossEntropyLoss().to(self.args.device)
 
     def info_nce_loss(self, features):
@@ -59,6 +58,7 @@ class simclr_framework(object):
         save_config_file(self.writer.log_dir, self.args)
 
         n_iter = 0
+        setup_logging(self.log_dir, 'training.log')
         logging.info(f"Start SimCLR training for {self.args.epochs} epochs.")
         logging.info(f"Training with gpu: {self.args.device}.")
 
@@ -95,12 +95,13 @@ class simclr_framework(object):
                 self.scheduler.step()
             logging.debug(f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
 
+            if epoch_counter % 100 == 0:
+                checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(epoch_counter)
+                save_checkpoint({
+                    'epoch': self.args.epochs,
+                    'arch': 'resnet18',
+                    'state_dict': self.model.state_dict(),
+                    'optimizer': self.optimizer.state_dict(),
+                }, is_best=False, filename=os.path.join(self.writer.log_dir, checkpoint_name))
+                logging.info(f"Model checkpoint and metadata has been saved at {self.writer.log_dir}.")
         logging.info("Training has finished.")
-        checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(self.args.epochs)
-        save_checkpoint({
-            'epoch': self.args.epochs,
-            'arch': 'resnet18',
-            'state_dict': self.model.state_dict(),
-            'optimizer': self.optimizer.state_dict(),
-        }, is_best=False, filename=os.path.join(self.writer.log_dir, checkpoint_name))
-        logging.info(f"Model checkpoint and metadata has been saved at {self.writer.log_dir}.")
