@@ -95,10 +95,10 @@ class simclr_framework(object):
                 self.scheduler.step()
             logging.debug(f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
 
-            if epoch_counter % 100 == 0:
-                checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(epoch_counter)
+            if (epoch_counter+1) % 100 == 0:
+                checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(epoch_counter+1)
                 save_checkpoint({
-                    'epoch': self.args.epochs,
+                    'epoch': epoch_counter,
                     'arch': 'resnet18',
                     'state_dict': self.model.state_dict(),
                     'optimizer': self.optimizer.state_dict(),
